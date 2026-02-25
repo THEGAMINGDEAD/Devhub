@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dev Hub — Offline Tools</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --bg: #0b0f1a;
+  --panel: #12182b;
+  --accent: #4cc9f0;
+  --accent2: #7c7cff;
+  --text: #e6e9ff;
+  --muted: #9aa3c7;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(circle at top, #10163a, var(--bg));
+  color: var(--text);
+}
+
+header {
+  padding: 2rem;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.4rem;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  padding-bottom: 1rem;
+}
+
+nav button {
+  background: var(--panel);
+  color: var(--text);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+nav button:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 1rem;
+}
+
+.tool {
+  display: none;
+  animation: fade 0.4s ease;
+}
+
+.tool.active {
+  display: block;
+}
+
+.panel {
+  background: linear-gradient(180deg, var(--panel), #0e1324);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+}
+
+input, textarea {
+  width: 100%;
+  background: #0b0f1a;
+  border: 1px solid #2a3360;
+  color: var(--text);
+  padding: 0.6rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+textarea { min-height: 100px; }
+
+button.action {
+  margin-top: 0.7rem;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Developer Hub</h1>
+  <p>Offline • Fast • All-in-one</p>
+</header>
+
+<nav>
+  <button onclick="showTool('keypress')">Keypress</button>
+  <button onclick="showTool('binary')">Binary</button>
+  <button onclick="showTool('hex')">Hex</button>
+  <button onclick="showTool('unicode')">Unicode</button>
+  <button onclick="showTool('base64')">Base64</button>
+  <button onclick="showTool('mathjs')">Math → JS</button>
+  <button onclick="showTool('mathpy')">Math → Python</button>
+  <button onclick="showTool('regex')">Regex</button>
+  <button onclick="showTool('json')">JSON</button>
+  <button onclick="showTool('hash')">SHA-256</button>
+  <button onclick="showTool('time')">Timestamp</button>
+</nav>
+
+<main>
+
+<div id="keypress" class="tool active panel">
+  <h2>Keypress Inspector</h2>
+  <p>Press any key:</p>
+  <pre id="keyOut"></pre>
+</div>
+
+<div id="binary" class="tool panel">
+  <h2>Text ↔ Binary</h2>
+  <textarea id="binIn"></textarea>
+  <button class="action" onclick="toBinary()">To Binary</button>
+  <button class="action" onclick="fromBinary()">From Binary</button>
+</div>
+
+<div id="hex" class="tool panel">
+  <h2>Text ↔ Hex</h2>
+  <textarea id="hexIn"></textarea>
+  <button class="action" onclick="toHex()">To Hex</button>
+  <button class="action" onclick="fromHex()">From Hex</button>
+</div>
+
+<div id="unicode" class="tool panel">
+  <h2>Unicode Inspector</h2>
+  <input id="uniIn" placeholder="Type text">
+  <pre id="uniOut"></pre>
+</div>
+
+<div id="base64" class="tool panel">
+  <h2>Base64</h2>
+  <textarea id="b64"></textarea>
+  <button class="action" onclick="btoaAction()">Encode</button>
+  <button class="action" onclick="atobAction()">Decode</button>
+</div>
+
+<div id="mathjs" class="tool panel">
+  <h2>Math → JavaScript</h2>
+  <input id="mathJS" placeholder="e.g. sin(x)^2 + cos(x)^2">
+  <pre id="outJS"></pre>
+</div>
+
+<div id="mathpy" class="tool panel">
+  <h2>Math → Python</h2>
+  <input id="mathPY" placeholder="e.g. sqrt(x^2 + y^2)">
+  <pre id="outPY"></pre>
+</div>
+
+<div id="regex" class="tool panel">
+  <h2>Regex Tester</h2>
+  <input id="regexExp" placeholder="Regex">
+  <textarea id="regexText"></textarea>
+  <pre id="regexOut"></pre>
+</div>
+
+<div id="json" class="tool panel">
+  <h2>JSON Formatter</h2>
+  <textarea id="jsonIn"></textarea>
+  <button class="action" onclick="formatJSON()">Format</button>
+</div>
+
+<div id="hash" class="tool panel">
+  <h2>SHA-256 Hash</h2>
+  <input id="hashIn">
+  <pre id="hashOut"></pre>
+</div>
+
+<div id="time" class="tool panel">
+  <h2>Timestamp Converter</h2>
+  <input id="timeIn" placeholder="Unix timestamp">
+  <pre id="timeOut"></pre>
+</div>
+
+</main>
+
+<script>
+function showTool(id) {
+  document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+document.addEventListener('keydown', e => {
+  keyOut.textContent =
+    `Key: ${e.key}\nCode: ${e.code}\nKeyCode: ${e.keyCode}\nASCII: ${e.key.charCodeAt(0)}`;
+});
+
+function toBinary() {
+  binIn.value = [...binIn.value].map(c => c.charCodeAt(0).toString(2)).join(' ');
+}
+function fromBinary() {
+  binIn.value = binIn.value.split(' ').map(b => String.fromCharCode(parseInt(b,2))).join('');
+}
+
+function toHex() {
+  hexIn.value = [...hexIn.value].map(c => c.charCodeAt(0).toString(16)).join(' ');
+}
+function fromHex() {
+  hexIn.value = hexIn.value.split(' ').map(h => String.fromCharCode(parseInt(h,16))).join('');
+}
+
+uniIn?.addEventListener('input', () => {
+  uniOut.textContent = [...uniIn.value].map(c => `${c} U+${c.codePointAt(0).toString(16)}`).join('\n');
+});
+
+function btoaAction(){ b64.value = btoa(b64.value); }
+function atobAction(){ b64.value = atob(b64.value); }
+
+mathJS?.addEventListener('input', () => outJS.textContent = `function f(x){ return ${mathJS.value}; }`);
+mathPY?.addEventListener('input', () => outPY.textContent = `def f(x):\n    return ${mathPY.value}`);
+
+function formatJSON(){
+  jsonIn.value = JSON.stringify(JSON.parse(jsonIn.value), null, 2);
+}
+
+async function sha256(msg){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg));
+  hashOut.textContent = [...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+hashIn?.addEventListener('input', e => sha256(e.target.value));
+
+timeIn?.addEventListener('input', () => {
+  timeOut.textContent = new Date(timeIn.value * 1000).toString();
+});
+</script>
+
+</body>
+</html>
